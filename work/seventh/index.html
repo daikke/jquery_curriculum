@@ -34,6 +34,45 @@
       // .data() 要素のdata属性を取得します。
       // .width() 要素の幅を取得します。
       // .length 要素の個数を取得します。
+      $(function(){
+        var slide_position = 0;
+        var slide_width = [];
+        var slide_equal_width = 0;
+        //ulをeachでまわす
+        for(i = 0; i<$("ul").find("li").length; i++){
+          slide_width[i] = $("ul").find("li").eq(i).width();
+        }
+        console.log(slide_width)
+        $(".is-next").click(function(){
+          if(slide_position < $(".slider-list").children("li").length - 1){
+            slide_position++;
+          }else{
+            slide_position = 0;
+          };
+          for(i = 0; i < slide_position; i++ ){
+            slide_equal_width += slide_width[i]
+          }
+          $(".slider-list").animate({
+            left :-slide_equal_width
+          })
+          slide_equal_width = 0;
+        })
+        $(".is-prev").click(function(){
+          if(slide_position > 0){
+            slide_position--;
+          }else{
+            slide_position = $(".slider-list").children("li").length - 1;
+          };
+          for(i = 0; i < slide_position; i++ ){
+            slide_equal_width += slide_width[i]
+          }
+          $(".slider-list").animate({
+            left :-slide_equal_width
+          });
+          slide_equal_width = 0;
+        })
+
+      })
     </script>
   </body>
 </html>
