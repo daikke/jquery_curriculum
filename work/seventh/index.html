@@ -39,9 +39,9 @@
         var slide_width = [];//初めはslide_width = $("ul").find("li").width()
         for(i = 0; i<$("ul").find("li").length; i++){//slide_widthにimgのwidthを配列で入れる
           if(i !== 0){
-            slide_width[i] = slide_width[i-1]+$("ul").find("li").eq(i-1).width()
+            slide_width[i] = slide_width[i - 1] + $("ul").find("li").eq(i - 1).width()
           }else{
-            slide_width[i] = 0;
+            slide_width[i] = 0;//$("ul").find("li").eq(i).width()
           };
         }
         console.log(slide_width)
