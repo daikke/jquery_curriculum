@@ -21,6 +21,7 @@
           </div>
           <button id="js-search-button" class="search__btn">検索する</button>
         </div>
+        <p class="message"style="display: none;">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。<br></p>
         <ul class="lists"></ul>
       </div>
     </div>
@@ -68,6 +69,91 @@
       //
       //
       //
+      $(function(){
+        var clicked = 1
+        var searched_keyword ;
+        $("#js-search-button").click(function(){
+            if(searched_keyword == $('input').val()){
+              clicked += 1;
+              next(clicked);
+              console.log("next")
+            }else{
+              clicked = 1;
+              reset();
+              search();
+              console.log("serch");
+              searched_keyword = $('input').val();
+            }
+          });
+        })
+
+        function search (){
+          $.ajax({
+            url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+            type: 'GET',
+            datatype: 'json',
+            data: {
+              applicationId: '1019399324990976605',
+              booksGenreId: '001',
+              keyword: $('input').val(),
+              hits: '20',
+            },
+          })
+          .done(function(data){
+            var book = data.Items;
+            if(book.length === 0){
+              no_data();
+            }else{
+              for( i = 0; i < book.length; i++)
+                $(".lists").append("<li class='lists__item'><div class='lists__item__inner'><a href='" + book[i].Item.itemUrl + "' class='lists__item__link' target='_blank'><img src='" + book[i].Item.largeImageUrl + "' class='lists__item__img' alt=''><p class='lists__item__detail'>作品名：" + book[i].Item.title + "</p><p class='lists__item__detail'>作者　：" + book[i].Item.author + "</p><p class='lists__item__detail'>出版社："  + book[i].Item.publisherName +"</p></a></div></li>")
+            }
+
+          })
+          .fail(function(data){
+            console.log(data)
+            console.log("fail")
+            connect_fail();
+          })
+        }
+        function next (clicked){
+          $.ajax({
+            url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+            type: 'GET',
+            datatype: 'json',
+            data: {
+              applicationId: '1019399324990976605',
+              booksGenreId: '001',
+              keyword: $('input').val(),
+              hits: '20',
+              page: clicked
+            },
+          })
+          .done(function(data){
+            var book = data.Items;
+            console.log(data)
+            if(book.length === 0){
+              no_data();
+            }else{
+              for( i = book.length-1; i >= 0; i--)
+                $(".lists").prepend("<li class='lists__item'><div class='lists__item__inner'><a href='" + book[i].Item.itemUrl + "' class='lists__item__link' target='_blank'><img src='" + book[i].Item.largeImageUrl + "' class='lists__item__img' alt=''><p class='lists__item__detail'>作品名：" + book[i].Item.title + "</p><p class='lists__item__detail'>作者　：" + book[i].Item.author + "</p><p class='lists__item__detail'>出版社："  + book[i].Item.publisherName +"</p></a></div></li>")
+            }
+
+          })
+          .fail(function(data){
+            console.log(data)
+            console.log("fail")
+            connect_fail();
+          })
+        }
+        function reset (){
+          $(".lists").empty();
+        }
+        function no_data(){
+            console.log("nodata");
+            $(".message").css("display","block");
+        }
+        function connect_fail(){
+        }
     </script>
   </body>
 </html>
