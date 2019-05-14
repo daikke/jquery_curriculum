@@ -70,8 +70,8 @@
       //
       $(function(){
         var clicked = 1
-        var searched_keyword = "" ;
-        $("#js-search-button").click(function(){
+        var searched_keyword = '' ;//中で使うものを""javascriptの中は''
+        $('#js-search-button').click(function(){
           if(searched_keyword == $('input').val()){
             clicked += 1;
           }else{
@@ -79,13 +79,13 @@
             searched_keyword = $('input').val();
             reset();
           }
-        search(clicked,searched_keyword);
+          search(searched_keyword);
         });
-        function search (clicked,searched_keyword){
+        function search (searched_keyword){
           $.ajax({
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
             type: 'GET',
-            datatype: 'json',
+            datatype: 'json',//
             data: {
               applicationId: '1019399324990976605',
               booksGenreId: '001',
@@ -95,16 +95,7 @@
             },
           })
           .done(function(data){
-            var book = data.Items;
-            if(book.length === 0){
-              no_data();
-            }else{
-              var text = "";
-              for( i = 0; i < book.length; i++){
-                text += "<li class='lists__item'><div class='lists__item__inner'><a href='" + book[i].Item.itemUrl + "' class='lists__item__link' target='_blank'><img src='" + book[i].Item.largeImageUrl + "' class='lists__item__img' alt=''><p class='lists__item__detail'>作品名：" + book[i].Item.title + "</p><p class='lists__item__detail'>作者　：" + book[i].Item.author + "</p><p class='lists__item__detail'>出版社："  + book[i].Item.publisherName +"</p></a></div></li>"
-              }
-              $(".lists").prepend(text);
-            }
+            connect_succses(data);
           })
           .fail(function(jqXHR){
             connect_fail(jqXHR);
@@ -112,43 +103,55 @@
         }
         function reset (){
           $(".lists").empty();
+          $('.message').remove();
         }
-        function no_data(){
-          $(".message").empty();
-          $(".lists").prepend('<p class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。<br></p>')
+        function connect_succses(data){
+          var book = data.Items;//shift+tab
+          if(book.length === 0){
+            $('.message').remove();//emptyから変更
+            $('.lists').before('<p class="message">検索結果が見つかりませんでした。<br>別のキーワードで検索して下さい。<br></p>');//beforeの方がいい（ulの中身なので。
+          }else{
+            var text = '';
+            for( var i = 0; i < book.length; i++){
+              text += '<li class="lists__item"><div class="lists__item__inner"><a href="' + book[i].Item.itemUrl + '" class="lists__item__link" target="_blank"><img src="' + book[i].Item.largeImageUrl + '" class="lists__item__img" alt=""><p class="lists__item__detail">作品名：' + book[i].Item.title + '</p><p class="lists__item__detail">作者　：' + book[i].Item.author + '</p><p class="lists__item__detail">出版社：'  + book[i].Item.publisherName +'</p></a></div></li>'
+            }
+            $('.lists').prepend(text);
+          }
         }
+
         function connect_fail(jqXHR){
-          $(".message").empty();
-          var error_title = "";
-          var error_reason = "";
+          console.log(jqXHR);
+          $('.message').empty();
+          var error_title = '';
+          var error_reason = '';
           switch(jqXHR.status){//エラー内容振り分け
             case 0:
-            error_title = "インターネットに接続できません";
-            error_reason = "接続状況を確認の上再度ご利用ください。";
+            error_title = 'インターネットに接続できません';
+            error_reason = '接続状況を確認の上再度ご利用ください。';
             break
             case 400:
-            error_title = "検索値が不適切";
-            error_reason = "検索値が正しくありません。スペースを含まない2文字以上のキーワードで検索してください。"
+            error_title = '検索値が不適切';
+            error_reason = '検索値が正しくありません。スペースを含まない2文字以上のキーワードで検索してください。';
             break;
             case 404:
-            error_title = "対象のデータは存在しません";
-            error_reason = "検索結果が見つかりませんでした。別のキーワードで検索してください。";
+            error_title = '対象のデータは存在しません';
+            error_reason = '検索結果が見つかりませんでした。別のキーワードで検索してください。';
             break;
             case 429:
-            error_title = "リクエスト過多";
-            error_reason = "しばらく時間を空けてから、ご利用ください。";
+            error_title = 'リクエスト過多';
+            error_reason = 'しばらく時間を空けてから、ご利用ください。';
             break;
             case 500:
-            error_title = "楽天ウェブサービス内のエラー";
-            error_reason = "しばらく時間を空けてから、ご利用ください。";
+            error_title = '楽天ウェブサービス内のエラー';
+            error_reason = 'しばらく時間を空けてから、ご利用ください。';
             break;
             case 503:
-            error_title = "サービスメンテナンス中";
-            error_reason = "しばらく時間を空けてから、ご利用ください。";
+            error_title = 'サービスメンテナンス中';
+            error_reason = 'しばらく時間を空けてから、ご利用ください。';
             break;
           }
-          $(".lists").prepend('<p class="message">エラーが発生しました(' + jqXHR.status + ')<br><br>エラー内容:' + error_title + '<br>解決法:' + error_reason + '</p>');
-          clicked--;
+          $('.lists').prepend('<p class="message">エラーが発生しました(' + jqXHR.status + ')<br><br>エラー内容:' + error_title + '<br>解決法:' + error_reason + '</p>');
+          clicked--;//responseJSON/error_description/ifresposeJsonで中身の確認する方法
       }
     })
     </script>
