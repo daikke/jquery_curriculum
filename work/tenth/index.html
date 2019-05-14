@@ -74,13 +74,12 @@
         $("#js-search-button").click(function(){
           if(searched_keyword == $('input').val()){
             clicked += 1;
-            search(clicked,searched_keyword);
           }else{
             clicked = 1;
             searched_keyword = $('input').val();
             reset();
-            search(clicked,searched_keyword);
           }
+        search(clicked,searched_keyword);
         });
         function search (clicked,searched_keyword){
           $.ajax({
